@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.devsuperior.dscatalog.entidades.Categoria;
+import com.devsuperior.dscatalog.dto.CategoriaDTO;
 import com.devsuperior.dscatalog.servicos.CategoriaService;
 
 @RestController
@@ -19,8 +19,8 @@ public class CategoriaResource{
 	private CategoriaService servico;
 
 	@GetMapping
-	public ResponseEntity<List<Categoria>> bucarTodas(){
-		List<Categoria> lista = servico.buscaTodos();		
+	public ResponseEntity<List<CategoriaDTO>> bucarTodas(){
+		List<CategoriaDTO> lista = servico.buscaTodos();		
 		return ResponseEntity.ok().body(lista);
 	}
 }
