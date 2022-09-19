@@ -1,6 +1,7 @@
 package com.devsuperior.dscatalog.servicos;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsuperior.dscatalog.dto.CategoriaDTO;
 import com.devsuperior.dscatalog.entidades.Categoria;
 import com.devsuperior.dscatalog.repositorios.CategoriaRepository;
+import com.devsuperior.dscatalog.servicos.exceptions.EntidadeNaoEncontradaException;
 
 @Service
 public class CategoriaService {
@@ -29,6 +31,14 @@ public class CategoriaService {
 		}
 		
 		return listaDto;*/
+	}
+
+	@Transactional(readOnly = true)
+	public CategoriaDTO buscaPorId(Long id) {
+		Optional<Categoria> obj = repositorio.findById(id);
+		//Categoria entidade = obj.get();
+		Categoria entidade = obj.orElseThrow(() -> new EntidadeNaoEncontradaException("Entidade não Encontrada"));
+		return new CategoriaDTO(entidade);
 	}
 
 }
