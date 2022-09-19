@@ -41,4 +41,12 @@ public class CategoriaService {
 		return new CategoriaDTO(entidade);
 	}
 
+	@Transactional
+	public CategoriaDTO inserir(CategoriaDTO dto) {
+		Categoria entidade = new Categoria();
+		entidade.setNome(dto.getNome());
+		entidade = repositorio.save(entidade);
+		return new CategoriaDTO(entidade);
+	}
+
 }
