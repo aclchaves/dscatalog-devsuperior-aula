@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.devsuperior.dscatalog.servicos.exceptions.DataBaseException;
 import com.devsuperior.dscatalog.servicos.exceptions.EntidadeNaoEncontradaException;
 
 @ControllerAdvice
@@ -25,4 +26,19 @@ public class RecursoExceptionHandler {
 		
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
 	}
+	
+	@ExceptionHandler(DataBaseException.class)
+	public ResponseEntity<ErroPadrao> dataBase(DataBaseException e,
+			HttpServletRequest request){
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		ErroPadrao err = new ErroPadrao();
+		err.setTimpestamp(Instant.now());
+		err.setStatus(status.value());
+		err.setError("Database exception");
+		err.setMessage(e.getMessage());
+		err.setPath(request.getRequestURI());
+		
+		return ResponseEntity.status(status).body(err);
+	}
+	
 }

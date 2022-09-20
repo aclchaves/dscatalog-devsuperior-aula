@@ -7,12 +7,15 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.dscatalog.dto.CategoriaDTO;
 import com.devsuperior.dscatalog.entidades.Categoria;
 import com.devsuperior.dscatalog.repositorios.CategoriaRepository;
+import com.devsuperior.dscatalog.servicos.exceptions.DataBaseException;
 import com.devsuperior.dscatalog.servicos.exceptions.EntidadeNaoEncontradaException;
 
 @Service
@@ -61,6 +64,17 @@ public class CategoriaService {
 		}catch (EntityNotFoundException e) {
 			throw new EntidadeNaoEncontradaException("Id não encontrado " + id);
 		}
+	}
+
+	public void deletar(Long id) {
+		try {
+			repositorio.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new EntidadeNaoEncontradaException("Id não encontrado " + id);
+		}catch (DataIntegrityViolationException e) {
+			throw new DataBaseException("Violacao de integridade");
+		}
+		
 	}
 
 }
