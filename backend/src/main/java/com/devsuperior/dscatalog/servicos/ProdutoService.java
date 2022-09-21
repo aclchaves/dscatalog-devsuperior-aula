@@ -12,8 +12,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devsuperior.dscatalog.dto.CategoriaDTO;
 import com.devsuperior.dscatalog.dto.ProdutoDTO;
+import com.devsuperior.dscatalog.entidades.Categoria;
 import com.devsuperior.dscatalog.entidades.Produto;
+import com.devsuperior.dscatalog.repositorios.CategoriaRepository;
 import com.devsuperior.dscatalog.repositorios.ProdutoRepository;
 import com.devsuperior.dscatalog.servicos.exceptions.DataBaseException;
 import com.devsuperior.dscatalog.servicos.exceptions.EntidadeNaoEncontradaException;
@@ -23,6 +26,9 @@ public class ProdutoService {
 	
 	@Autowired
 	private ProdutoRepository repositorio;
+	
+	@Autowired
+	private CategoriaRepository categoriaRepositorio;
 	
 	@Transactional(readOnly = true)
 	public Page<ProdutoDTO> buscaTodosPaginado(PageRequest pageRequest){
@@ -47,18 +53,18 @@ public class ProdutoService {
 	}
 
 	@Transactional
-	public ProdutoDTO inserir(ProdutoDTO dto) {
+	public ProdutoDTO inserir(ProdutoDTO dto) {		
 		Produto entidade = new Produto();
-		//entidade.setNome(dto.getNome());
+		CopisDtoParaEntidade(dto, entidade);		
 		entidade = repositorio.save(entidade);
 		return new ProdutoDTO(entidade);
-	}
+	}	
 
 	@Transactional
 	public ProdutoDTO update(Long id, ProdutoDTO dto) {
 		try {		
 			Produto entidade = repositorio.getOne(id);
-			//entidade.setNome(dto.getNome());
+			CopisDtoParaEntidade(dto, entidade);			
 			entidade = repositorio.save(entidade);
 			return new ProdutoDTO(entidade);
 		}catch (EntityNotFoundException e) {
@@ -73,6 +79,22 @@ public class ProdutoService {
 			throw new EntidadeNaoEncontradaException("Id não encontrado " + id);
 		}catch (DataIntegrityViolationException e) {
 			throw new DataBaseException("Violacao de integridade");
+		}
+		
+	}
+	
+	private void CopisDtoParaEntidade(ProdutoDTO dto, Produto entidade) {
+		
+		entidade.setNome(dto.getNome());
+		entidade.setDescricao(dto.getDescricao());
+		entidade.setDate(dto.getDate());
+		entidade.setImgUrl(dto.getImgUrl());
+		entidade.setPreco(dto.getPreco());
+		
+		entidade.getCategorias().clear();
+		for (CategoriaDTO catDto : dto.getCategorias()) {
+			Categoria categoria = categoriaRepositorio.getOne(catDto.getId());
+			entidade.getCategorias().add(categoria);
 		}
 		
 	}
